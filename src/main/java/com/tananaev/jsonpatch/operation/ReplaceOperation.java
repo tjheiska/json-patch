@@ -8,47 +8,52 @@ import com.tananaev.jsonpatch.JsonPath;
 
 public class ReplaceOperation extends AbsOperation {
 
-    @SerializedName("value")
-    public JsonElement data;
+	@SerializedName("value")
+	public JsonElement data;
 
-    public ReplaceOperation(JsonPath path, JsonElement data) {
-        this.path = path;
-        this.data = data;
-    }
+	public ReplaceOperation() {
+		/* Empty default constructor */
+	}
 
-    @Override
-    public String getOperationName() {
-        return "replace";
-    }
+	public ReplaceOperation(JsonPath path, JsonElement data) {
+		this.path = path;
+		this.data = data;
+	}
 
-    @Override
-    public JsonElement apply(JsonElement original) {
-        JsonElement result = duplicate( original );
+	@Override
+	public String getOperationName() {
+		return "replace";
+	}
 
-        JsonElement item = path.head().navigate(result);
+	@Override
+	public JsonElement apply(JsonElement original) {
+		JsonElement result = duplicate(original);
 
-        if ( item.isJsonObject() ){
-            JsonObject object = item.getAsJsonObject();
+		JsonElement item = path.head().navigate(result);
 
-            object.add( path.tail(), data );;
+		if (item.isJsonObject()) {
+			JsonObject object = item.getAsJsonObject();
 
-        } else if ( item.isJsonArray() ){
+			object.add(path.tail(), data);
+			;
 
-            JsonArray array = item.getAsJsonArray();
+		} else if (item.isJsonArray()) {
 
-            int index = (path.tail().equals("-")) ? array.size() : Integer.valueOf(path.tail());
+			JsonArray array = item.getAsJsonArray();
 
-            if ( index < array.size() ) {
-                array.set(index, data);
-            } else {
-                array.add(data);
-            }
+			int index = (path.tail().equals("-")) ? array.size() : Integer.valueOf(path.tail());
 
-        } else {
-            return data;
-        }
+			if (index < array.size()) {
+				array.set(index, data);
+			} else {
+				array.add(data);
+			}
 
-        return result;
-    }
+		} else {
+			return data;
+		}
+
+		return result;
+	}
 
 }

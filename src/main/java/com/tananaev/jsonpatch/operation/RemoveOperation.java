@@ -4,34 +4,38 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.tananaev.jsonpatch.JsonPath;
 
-public class RemoveOperation extends AbsOperation{
+public class RemoveOperation extends AbsOperation {
 
-    public RemoveOperation( JsonPath path ) {
-        this.path = path;
-    }
+	public RemoveOperation() {
+		/* Empty default constructor */
+	}
 
-    @Override
-    public String getOperationName() {
-        return "remove";
-    }
+	public RemoveOperation(JsonPath path) {
+		this.path = path;
+	}
 
-    @Override
-    public JsonElement apply(JsonElement original) {
-        JsonElement result = duplicate( original );
+	@Override
+	public String getOperationName() {
+		return "remove";
+	}
 
-        JsonElement item = path.head().navigate(result);
+	@Override
+	public JsonElement apply(JsonElement original) {
+		JsonElement result = duplicate(original);
 
-        if ( item.isJsonObject() ){
-            item.getAsJsonObject().remove(path.tail());
-        } else if ( item.isJsonArray() ){
-            JsonArray array = item.getAsJsonArray();
+		JsonElement item = path.head().navigate(result);
 
-            int index = (path.tail().equals("-")) ? array.size() : Integer.valueOf(path.tail());
+		if (item.isJsonObject()) {
+			item.getAsJsonObject().remove(path.tail());
+		} else if (item.isJsonArray()) {
+			JsonArray array = item.getAsJsonArray();
 
-            array.remove(index);
-        }
+			int index = (path.tail().equals("-")) ? array.size() : Integer.valueOf(path.tail());
 
-        return result;
-    }
+			array.remove(index);
+		}
+
+		return result;
+	}
 
 }

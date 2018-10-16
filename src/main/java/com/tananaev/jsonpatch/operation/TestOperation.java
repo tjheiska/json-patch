@@ -11,6 +11,10 @@ public class TestOperation extends AbsOperation {
 	@SerializedName("value")
 	public JsonElement data;
 
+	public TestOperation() {
+		/* Empty default contructor */
+	}
+
 	public TestOperation(JsonPath path, JsonElement data) {
 		this.data = data;
 		this.path = path;

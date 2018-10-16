@@ -1,71 +1,83 @@
 package com.tananaev.jsonpatch.operation;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.tananaev.jsonpatch.JsonPath;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class MoveOperation extends AbsOperation{
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.tananaev.jsonpatch.JsonPath;
 
-    public final JsonPath from;
+public class MoveOperation extends AbsOperation {
 
-    public MoveOperation(JsonPath from, JsonPath path) {
-        this.path = path;
-        this.from = from;
-    }
+	private JsonPath from;
 
-    @Override
-    public String getOperationName() {
-        return "move";
-    }
+	public MoveOperation() {
+		/* Empty default constructor */
+	}
 
-    @Override
-    public JsonElement apply(JsonElement original) {
-        JsonElement result = duplicate( original );
+	public MoveOperation(JsonPath from, JsonPath path) {
+		this.path = path;
+		this.from = from;
+	}
 
-        JsonElement value = from.navigate(result);
+	@Override
+	public String getOperationName() {
+		return "move";
+	}
 
-        JsonElement source = from.head().navigate(result);
-        JsonElement destination = path.head().navigate(result);
+	public JsonPath getFrom() {
+		return from;
+	}
 
-        if ( source.isJsonObject() ){
-            source.getAsJsonObject().remove(from.tail());
-        } else if ( source.isJsonArray() ){
-            JsonArray array = source.getAsJsonArray();
+	public void setFrom(JsonPath from) {
+		this.from = from;
+	}
 
-            int index = (from.tail().equals("-")) ? array.size() : Integer.valueOf(from.tail());
+	@Override
+	public JsonElement apply(JsonElement original) {
+		JsonElement result = duplicate(original);
 
-            array.remove(index);
-        }
+		JsonElement value = from.navigate(result);
 
-        if ( destination.isJsonObject() ){
-            destination.getAsJsonObject().add(path.tail(),value);
-        } else if ( destination.isJsonArray() ){
+		JsonElement source = from.head().navigate(result);
+		JsonElement destination = path.head().navigate(result);
 
-            JsonArray array = destination.getAsJsonArray();
+		if (source.isJsonObject()) {
+			source.getAsJsonObject().remove(from.tail());
+		} else if (source.isJsonArray()) {
+			JsonArray array = source.getAsJsonArray();
 
-            int index = (path.tail().equals("-")) ? array.size() : Integer.valueOf(path.tail());
+			int index = (from.tail().equals("-")) ? array.size() : Integer.valueOf(from.tail());
 
-            List<JsonElement> temp = new ArrayList<JsonElement>();
+			array.remove(index);
+		}
 
-            Iterator<JsonElement> iter = array.iterator();
-            while (iter.hasNext()){
-                JsonElement stuff = iter.next();
-                iter.remove();
-                temp.add( stuff );
-            }
+		if (destination.isJsonObject()) {
+			destination.getAsJsonObject().add(path.tail(), value);
+		} else if (destination.isJsonArray()) {
 
-            temp.add(index, value);
+			JsonArray array = destination.getAsJsonArray();
 
-            for ( JsonElement stuff: temp ){
-                array.add(stuff);
-            }
-        }
+			int index = (path.tail().equals("-")) ? array.size() : Integer.valueOf(path.tail());
 
-        return result;
-    }
+			List<JsonElement> temp = new ArrayList<JsonElement>();
+
+			Iterator<JsonElement> iter = array.iterator();
+			while (iter.hasNext()) {
+				JsonElement stuff = iter.next();
+				iter.remove();
+				temp.add(stuff);
+			}
+
+			temp.add(index, value);
+
+			for (JsonElement stuff : temp) {
+				array.add(stuff);
+			}
+		}
+
+		return result;
+	}
 
 }
