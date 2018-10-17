@@ -25,6 +25,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.tananaev.jsonpatch.operation.AbsOperation;
 import com.tananaev.jsonpatch.operation.AddOperation;
+import com.tananaev.jsonpatch.operation.CopyOperation;
 import com.tananaev.jsonpatch.operation.MoveOperation;
 import com.tananaev.jsonpatch.operation.RemoveOperation;
 import com.tananaev.jsonpatch.operation.ReplaceOperation;
@@ -50,6 +51,8 @@ public class AbsOperationDeserializer implements JsonDeserializer<AbsOperation> 
 			return ReplaceOperation.class;
 		if ("test".equals(operation))
 			return TestOperation.class;
+		if ("copy".equals(operation))
+			return CopyOperation.class;
 		throw new JsonSyntaxException("operation " + operation + " not supported");
 	}
 

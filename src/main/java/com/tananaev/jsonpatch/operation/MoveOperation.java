@@ -34,8 +34,7 @@ public class MoveOperation extends AbsOperation {
 		this.from = from;
 	}
 
-	@Override
-	public JsonElement apply(JsonElement original) {
+	public JsonElement apply(JsonElement original, boolean remove) {
 		JsonElement result = duplicate(original);
 
 		JsonElement value = from.navigate(result);
@@ -43,14 +42,16 @@ public class MoveOperation extends AbsOperation {
 		JsonElement source = from.head().navigate(result);
 		JsonElement destination = path.head().navigate(result);
 
-		if (source.isJsonObject()) {
-			source.getAsJsonObject().remove(from.tail());
-		} else if (source.isJsonArray()) {
-			JsonArray array = source.getAsJsonArray();
+		if (remove) {
+			if (source.isJsonObject()) {
+				source.getAsJsonObject().remove(from.tail());
+			} else if (source.isJsonArray()) {
+				JsonArray array = source.getAsJsonArray();
 
-			int index = (from.tail().equals("-")) ? array.size() : Integer.valueOf(from.tail());
+				int index = (from.tail().equals("-")) ? array.size() : Integer.valueOf(from.tail());
 
-			array.remove(index);
+				array.remove(index);
+			}
 		}
 
 		if (destination.isJsonObject()) {
@@ -61,7 +62,7 @@ public class MoveOperation extends AbsOperation {
 
 			int index = (path.tail().equals("-")) ? array.size() : Integer.valueOf(path.tail());
 
-			List<JsonElement> temp = new ArrayList<JsonElement>();
+			List<JsonElement> temp = new ArrayList<>();
 
 			Iterator<JsonElement> iter = array.iterator();
 			while (iter.hasNext()) {
@@ -78,6 +79,11 @@ public class MoveOperation extends AbsOperation {
 		}
 
 		return result;
+	}
+
+	@Override
+	public JsonElement apply(JsonElement original) {
+		return apply(original, true);
 	}
 
 }
